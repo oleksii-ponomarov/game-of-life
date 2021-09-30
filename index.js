@@ -5,30 +5,9 @@ let canvasWidth = canvasElement.clientWidth;
 let canvasHeight = canvasElement.clientHeight;
 let cellSize = canvasWidth / 50;
 const cellColor = "rgb(0, 0, 0)";
+const gameSpeed = 30;
 
 let cells = [...Array(canvasWidth / cellSize)].map(() => [...Array(canvasHeight / cellSize)].map(() => 0));
-
-function drawGrid() {
-  const gridColor = "#aaaaaa";
-  canvas.strokeStyle = gridColor;
-
-  const colsNo = Math.floor(canvasWidth / cellSize);
-  const rowsNo = Math.floor(canvasHeight / cellSize);
-
-  for (let i = 0; i <= colsNo; i++) {
-    canvas.beginPath();
-    canvas.moveTo(i * cellSize, 0);
-    canvas.lineTo(i * cellSize, canvasHeight);
-    canvas.stroke();
-  }
-
-  for (let j = 0; j <= rowsNo; j++) {
-    canvas.beginPath();
-    canvas.moveTo(0, j * cellSize);
-    canvas.lineTo(canvasWidth, j * cellSize);
-    canvas.stroke();
-  }
-}
 
 function drawFirstGen() {
   canvas.fillStyle = cellColor;
@@ -99,7 +78,7 @@ function pause() {
 
 function start() {
   drawFirstGen();
-  game = setInterval(tick, 10);
+  game = setInterval(tick, gameSpeed);
   startButton.style.display = "none";
   pauseButton.style.display = "inline-flex";
 }
@@ -140,16 +119,12 @@ function handleDraw({
   drawCell(x, y);
 }
 
-function startDrawingTouch({
-  touches
-}) {
+function startDrawingTouch({ touches }) {
   drawing = true;
   drawCell(touches[0].clientX, touches[0].clientY);
 }
 
-function handleDrawTouch({
-  touches
-}) {
+function handleDrawTouch({ touches }) {
   if (!drawing) return;
   drawCell(touches[0].clientX, touches[0].clientY);
 }
@@ -168,9 +143,6 @@ canvasElement.addEventListener("mouseup", endDrawing);
 canvasElement.addEventListener("touchend", endDrawing);
 canvasElement.addEventListener("mouseout", endDrawing);
 
-const pattern1Button = document.getElementById("pattern1");
-pattern1Button.addEventListener("click", pattern1);
-
 function clearCells() {
   for (let i = 0; i < cells.length; i++) {
     for (let j = 0; j < cells[i].length; j++) {
@@ -179,14 +151,17 @@ function clearCells() {
   }
 }
 
+const clearButton = document.getElementById("clear");
+clearButton.addEventListener("click", handleClear);
+
 function handleClear() {
   pause();
   clearCells();
   drawFirstGen();
 }
 
-const clearButton = document.getElementById("clear");
-clearButton.addEventListener("click", handleClear);
+const pattern1Button = document.getElementById("pattern1");
+pattern1Button.addEventListener("click", pattern1);
 
 function pattern1() {
   clearCells();
@@ -204,15 +179,49 @@ function pattern1() {
   drawFirstGen();
 }
 
-const oscillatorButton = document.getElementById("oscillator");
-oscillatorButton.addEventListener("click", oscillator);
+const blinkerButton = document.getElementById("blinker");
+blinkerButton.addEventListener("click", blinker);
 
-function oscillator() {
+function blinker() {
   clearCells();
 
   cells[24][25] = 1;
   cells[25][25] = 1;
   cells[26][25] = 1;
+
+  drawFirstGen();
+}
+
+const toadButton = document.getElementById("toad");
+toadButton.addEventListener("click", toad);
+
+function toad() {
+  clearCells();
+
+  cells[25][23] = 1;
+  cells[26][24] = 1;
+  cells[26][25] = 1;
+
+  cells[23][24] = 1;
+  cells[23][25] = 1;
+  cells[24][26] = 1;
+
+  drawFirstGen();
+}
+
+const beaconButton = document.getElementById("beacon");
+beaconButton.addEventListener("click", beacon);
+
+function beacon() {
+  clearCells();
+
+  cells[23][23] = 1;
+  cells[24][23] = 1;
+  cells[23][24] = 1;
+
+  cells[26][25] = 1;
+  cells[26][26] = 1;
+  cells[25][26] = 1;
 
   drawFirstGen();
 }
